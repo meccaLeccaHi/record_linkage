@@ -1,8 +1,9 @@
 import pymysql
 import pandas as pd
+import numpy as np
 from munkres import Munkres
 
-class Linker(Munkres):
+class Linker():
 	def __init__(self):
 		self.connection = pymysql.connect(host='127.0.0.1',
                              user='root',
@@ -36,8 +37,8 @@ class Linker(Munkres):
 		nom_newb_id = list(link_cost_mat['linkage_cost'].index) # Get row names
 		nom_bc_id = link_cost_mat['linkage_cost'].columns.tolist() # Get column names
 
-		return np.concatenate([np.where((bool_table['newb_id']==nom_newb_id[row])&
-                                                 (bool_table['bc_id']==nom_bc_id[col])) 
+		return np.concatenate([np.where((link_list['newb_id']==nom_newb_id[row])&
+                                                 (link_list['bc_id']==nom_bc_id[col])) 
                                         for row,col in indexes]).ravel()
 		
 
