@@ -2,8 +2,9 @@
 
 import numpy as np
 #import scipy.special # for the sigmoid function expit()
+import linkage_tools # for the Linker superclass
 
-class Probabilistic(Linker):
+class Probabilistic(linkage_tools.Linker):
 		
 	# Initialize the probabilistic linker
 	def __init__(self, inputnodes):
@@ -23,25 +24,25 @@ class Probabilistic(Linker):
 		'''e.g. pr.train(bool_table[feature_vals],bool_table['real_match'],bool_table[['newb_id','bc_id']])'''
 
 		# Convert inputs list to 2d array
-		inputs = np.array(inputs, ndmin=2).T
-		targets = np.array(targets, ndmin=2).T
+		inputs = np.array(inputs_list, ndmin=2)
+		targets = np.array(targets, ndmin=2)
 
 		# Calculate probabilities going into linker
-		mprob_mat = np.tile(self.mprobs, inputs.shape)
+		mprob_mat = np.tile(self.m_probs, inputs.shape)
 		mprob_mat[inputs==0] = 1 - mprob_mat[inputs==0]
-		uprob_mat = np.tile(self.uprobs, inputs.shape)
+		uprob_mat = np.tile(self.u_probs, inputs.shape)
 		uprob_mat[inputs==0] = 1 - uprob_mat[inputs==0]
 
 		# Calculate the probabilistic linker predictions
-		linkage_score = np.apply_along_axis(self.activation_function, 0, foo_probs/bar_probs)
+		linkage_score = np.apply_along_axis(self.activation_function, 1, foo_probs/bar_probs)
 		# Convert to linkage score to linkage 'cost'
 		linkage_cost = abs(linkage_score - linkage_score.max())
 
 		# Maximize pair-wise linkage scores (minimize cost with Munkres)
 		link_list = input_ids.assign(linkage_cost = linkage_cost)
-        winner_index = self.maximize(link_list)           
-
-		mask = np.ones(len(winner_index), np.bool)
+		winner_index = self.maximize(link_list)
+		
+		mask = np.ones(len(link_list), np.bool)
 		mask[winner_index] = 0
 		loser_index = np.where(mask)
 
@@ -58,31 +59,31 @@ class Probabilistic(Linker):
 		self.m_probs = np.divide(m_match_count,m_pair_count)
 
 	# Query the probabilistic linker
-	def query(self, inputs_list):
+	def query(self, inputs_list, input_ids):
 		'''e.g. pr.query(bool_table[feature_vals])'''
 
 		# Convert inputs list to 2d array
-		inputs = np.array(inputs, ndmin=2).T
+		inputs = np.array(inputs_list, ndmin=2)
 
 		# Calculate probabilities going into linker
-		mprob_mat = np.tile(self.mprobs, inputs.shape)
+		mprob_mat = np.tile(self.m_probs, (inputs.shape[0],1))
 		mprob_mat[inputs==0] = 1 - mprob_mat[inputs==0]
-		uprob_mat = np.tile(self.uprobs, inputs.shape)
+		uprob_mat = np.tile(self.u_probs, (inputs.shape[0],1))
 		uprob_mat[inputs==0] = 1 - uprob_mat[inputs==0]
 
 		# Calculate the probabilistic linker predictions
-		linkage_score = np.apply_along_axis(self.activation_function, 0, foo_probs/bar_probs)
+		linkage_score = np.apply_along_axis(self.activation_function, 1, mprob_mat/uprob_mat)
 		# Convert to linkage score to linkage 'cost'
 		linkage_cost = abs(linkage_score - linkage_score.max())
 
 		# Maximize pair-wise linkage scores (minimize cost with Munkres)
 		link_list = input_ids.assign(linkage_cost = linkage_cost)
-        winner_index = self.maximize(link_list)           
+		winner_index = self.maximize(link_list)
 
-		winners = np.zeros(len(winner_index), np.bool)
+		winners = np.zeros(len(link_list), np.bool)
 		winners[winner_index] = 1
 
-		return winners
+		return winners, linkage_score
 
 '''
 # number of input nodes
