@@ -5,7 +5,8 @@ import scipy.special # for the sigmoid function expit()
 import linkage_tools # for the Linker superclass
 
 class Perceptron(linkage_tools.Linker):
-	"""Perceptron classifer.
+	"""
+	Perceptron classifer.
     Parameters
     ------------
     inputnodes : int
@@ -35,23 +36,22 @@ class Perceptron(linkage_tools.Linker):
 		self.activation_function = lambda x: (x>0)*1.0
 
 	# Train the neural network
-	def train(self, inputs_list, targets_list):
+	def train(self, inputs_list, winner_index, input_ids):
 		''' pt.train(bool_table[feature_vals],bool_table['real_match'])'''
 
 		# Convert inputs list to 2d array and transpose
 		inputs = np.array(inputs_list, ndmin=2)
 		inputs = np.concatenate((inputs,np.repeat(1, len(inputs[:,1]))[:, None]), axis=1) # Add bias input
 
-		targets = np.array(targets_list, ndmin=2)
-
-		#final_outputs = self.query(inputs_list)		
+		#targets = np.array(winner_index, ndmin=2)
+		final_outputs, final_inputs = self.query(inputs_list, input_ids)		
 
 		# Output error (answer - guess)
-		output_errors = targets - self.query(inputs_list)
+		output_errors = np.subtract(winner_index*1, final_outputs*1)
 
 		# Update the weights
 		for i,row in enumerate(inputs):
-			self.weights += self.lr * output_errors[:,i] * row
+			self.weights += self.lr * output_errors[i] * row
 			#print 'output_errors[:,i] : ' + str(output_errors[:,i])
 			#print self.lr * output_errors[:,i] * row
 		# self.weights += self.lr * np.dot(output_errors, inputs)
@@ -60,7 +60,7 @@ class Perceptron(linkage_tools.Linker):
 		self.tss.append(np.sum(output_errors**2))
 
 	# Query the neural network
-	def query(self, inputs_list):
+	def query(self, inputs_list, input_ids):
 		''' pt.query(bool_table[feature_vals])'''
 
 		# Convert inputs list to 2d array and transpose
@@ -68,11 +68,25 @@ class Perceptron(linkage_tools.Linker):
 		inputs = np.vstack([inputs,np.repeat(1, len(inputs[1,:]))]) # Add bias input
 
 		# Calculate signals into perceptron
-		final_inputs = np.dot(self.weights, inputs)
+		perc_score = np.dot(self.weights, inputs)
 		# Calculate the perceptron predictions
-		final_outputs = self.activation_function(final_inputs)
+		final_outputs = self.activation_function(perc_score)
 
-		return final_outputs
+		# Convert to linkage score to linkage 'cost'
+		perc_cost = abs(perc_score - perc_score.max())
+
+		# Maximize pair-wise linkage scores (minimize cost with Munkres)
+		link_list = input_ids.assign(linkage_cost = perc_cost)
+		winner_index = self.maximize(link_list)
+		
+		# Return boolean array
+		winners = np.zeros(len(link_list), np.bool)
+		winners[winner_index] = 1
+
+		#print 'activation function outputs : ' + str(np.where(final_outputs))
+		#print 'munkres outputs : ' + str(winner_index)
+
+		return winners, perc_score
 
 '''
 # number of input nodes
@@ -87,25 +101,3 @@ p = Perceptron(input_nodes, learning_rate)
 p.query([1.0, 0.5, -1.5])
 '''
 
-
-"""
-# DELETE ME (BELOW)
-def activation(row,features):
-    ''' Get prediction of perceptron for each row of cross-joined blocks (pandas dataframe) '''
-    
-    def sigmoid(x):
-        return 1 / (1 + np.exp(-x))
-    
-    activ = sigmoid(sum([row[key]*weights[key] for key in features+['bias']])) # sigmoid function
-    
-    return activ
-
-def update_weights(row,features):
-    ''' Update weights of perceptron for each row of cross-joined blocks (pandas dataframe) '''
-    error = row['real_match'] - row['links_neural'] # target - output
-    
-    weights = [weights[key]+learning_rate*error*row[key] for key in feature_vals+['bias']]
-    return weights
-
-    #new_tss = tss + error * error # add squared error
-"""

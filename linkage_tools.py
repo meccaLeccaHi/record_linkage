@@ -6,10 +6,10 @@ from munkres import Munkres
 class Linker(Munkres):
 	def __init__(self):
 		self.connection = pymysql.connect(host='127.0.0.1',
-                             user='root',
-                             db='current',
-                             charset='utf8mb4',
-                             cursorclass=pymysql.cursors.DictCursor)
+							user='root',
+							db='current',
+							charset='utf8mb4',
+							cursorclass=pymysql.cursors.DictCursor)
 
 	def exec_sql(self, sql):
 		''' Executes a sql command (string arg) and returns result as pandas dataframe '''
