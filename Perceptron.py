@@ -26,13 +26,13 @@ class Perceptron(linkage_tools.Linker):
 
 		self.inodes = inputnodes # Set number of nodes in input layer
 		self.lr = learningrate # Learning rate
-		self.tss = 0.0 # Initialize sum-of-squares
+		self.tss = [] # Initialize sum-of-squares
 
 		# Initialize perceptron weights to random values (1..n+1 to accomodate bias neuron)
 		self.weights = np.random.uniform(low=-0.01, high=0.01, size=inputnodes+1)
 
 		# Activation function is the sigmoid function
-		self.activation_function = lambda x: (x>0)*1
+		self.activation_function = lambda x: (x>0)*1.0
 
 	# Train the neural network
 	def train(self, inputs_list, targets_list):
@@ -44,19 +44,20 @@ class Perceptron(linkage_tools.Linker):
 
 		targets = np.array(targets_list, ndmin=2)
 
-		final_outputs = self.query(inputs_list)		
+		#final_outputs = self.query(inputs_list)		
 
-		# Output error (target - actual)
+		# Output error (answer - guess)
 		output_errors = targets - self.query(inputs_list)
 
 		# Update the weights
 		for i,row in enumerate(inputs):
 			self.weights += self.lr * output_errors[:,i] * row
-
+			#print 'output_errors[:,i] : ' + str(output_errors[:,i])
+			#print self.lr * output_errors[:,i] * row
 		# self.weights += self.lr * np.dot(output_errors, inputs)
 		
 		# Update the sum-of-squares
-		self.tss += np.sum(output_errors**2)
+		self.tss.append(np.sum(output_errors**2))
 
 	# Query the neural network
 	def query(self, inputs_list):

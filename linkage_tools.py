@@ -10,7 +10,6 @@ class Linker(Munkres):
                              db='current',
                              charset='utf8mb4',
                              cursorclass=pymysql.cursors.DictCursor)
-		#self.munkres = Munkres()
 
 	def exec_sql(self, sql):
 		''' Executes a sql command (string arg) and returns result as pandas dataframe '''
@@ -41,4 +40,28 @@ class Linker(Munkres):
                                                  (link_list['bc_id']==nom_bc_id[col])) 
                                         for row,col in indexes]).ravel()
 		
+	def prec_recall(self, linkage_score, theta, true_matches):
+		''' 
+		Get precision and recall from linkage data
+		- Precision: the percent of pairs with a score above theta that are real matches
+		- Recall: the percent of known matched pairs that get a score above theta
+		'''
+		precision = []
+		recall = []
 
+		for cutoff in theta:
+		    winners = (linkage_score>cutoff)
+		    #winners = (big_bool['linkage_score']>cutoff)&bool_table['pair_match']
+		    
+		    # - numerator: number of NOMINATED pairs with a score above theta that are real matches
+		    real_picks = sum(winners&true_matches)
+		    # - denominater: number of NOMINATED pairs with a score above theta
+		    picks = sum(winners)
+		    precision.append(real_picks/float(picks)*100)
+
+		    # - numerator: number of NOMINATED pairs with a score above theta that are real matches
+		    # - denominater: number of pairs that are real matches
+		    real_matches = true_matches.sum()
+		    recall.append(real_picks/float(real_matches)*100)
+		    
+		return precision,recall

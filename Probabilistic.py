@@ -18,6 +18,9 @@ class Probabilistic(linkage_tools.Linker):
 
 		# Activation function is the logarithmic function
 		self.activation_function = lambda x: np.sum(np.log(x))
+
+		self.prec_list = []
+		self.recall_list = []
 		
 	# Train the probabilistic linker
 	def train(self, inputs_list, winner_index):
