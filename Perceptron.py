@@ -35,19 +35,22 @@ class Perceptron(linkage_tools.Linker):
 		# Activation function is the sigmoid function
 		self.activation_function = lambda x: (x>0)*1.0
 
+		self.prec_list = []
+		self.recall_list = []
+		self.iter_qual_list = [0.0]
+
 	# Train the neural network
 	def train(self, inputs_list, winner_index, input_ids):
-		''' pt.train(bool_table[feature_vals],bool_table['real_match'])'''
+		''' e.g. pt.train(bool_table[feature_vals],bool_table['real_match'],bool_table[['newb_id','bc_id']])'''
 
 		# Convert inputs list to 2d array and transpose
 		inputs = np.array(inputs_list, ndmin=2)
 		inputs = np.concatenate((inputs,np.repeat(1, len(inputs[:,1]))[:, None]), axis=1) # Add bias input
 
-		#targets = np.array(winner_index, ndmin=2)
-		final_outputs, final_inputs = self.query(inputs_list, input_ids)		
+		guesses, raw_score = self.query(inputs_list, input_ids)		
 
 		# Output error (answer - guess)
-		output_errors = np.subtract(winner_index*1, final_outputs*1)
+		output_errors = np.subtract(winner_index*1, guesses*1)
 
 		# Update the weights
 		for i,row in enumerate(inputs):
@@ -61,7 +64,7 @@ class Perceptron(linkage_tools.Linker):
 
 	# Query the neural network
 	def query(self, inputs_list, input_ids):
-		''' pt.query(bool_table[feature_vals])'''
+		''' pt.query(bool_table[feature_vals],bool_table[['newb_id','bc_id']])'''
 
 		# Convert inputs list to 2d array and transpose
 		inputs = np.array(inputs_list, ndmin=2).T
