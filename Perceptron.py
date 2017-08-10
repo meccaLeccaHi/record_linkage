@@ -47,18 +47,21 @@ class Perceptron(linkage_tools.Linker):
 		inputs = np.array(inputs_list, ndmin=2)
 		inputs = np.concatenate((inputs,np.repeat(1, len(inputs[:,1]))[:, None]), axis=1) # Add bias input
 
-		guesses, raw_score = self.query(inputs_list, input_ids)		
+		guesses, _ = self.query(inputs_list, input_ids)		
 
 		# Output error (answer - guess)
 		output_errors = np.subtract(winner_index, guesses)
 
 		# Update the weights
-		for i,row in enumerate(inputs):
-			self.weights += self.lr * output_errors[i] * row
-			#print 'output_errors[:,i] : ' + str(output_errors[:,i])
-			#print self.lr * output_errors[:,i] * row
-		# self.weights += self.lr * np.dot(output_errors, inputs)
+		#for i,row in enumerate(inputs):
+		#	self.weights += self.lr * output_errors[i] * row
+		#	#print 'output_errors[:,i] : ' + str(output_errors[:,i])
+		#	#print self.lr * output_errors[:,i] * row
+		self.weights += self.lr * np.dot(output_errors, inputs)
 		
+		# signals = self.lr * output_errors[0] * row[0]
+		# print 'guess/answers/signals : ' + str([guesses[0],winner_index[0],signals])
+
 		# Update the sum-of-squares
 		self.tss.append(np.sum(output_errors**2))
 
