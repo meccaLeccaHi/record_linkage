@@ -50,7 +50,7 @@ class Perceptron(linkage_tools.Linker):
 		guesses, raw_score = self.query(inputs_list, input_ids)		
 
 		# Output error (answer - guess)
-		output_errors = np.subtract(winner_index*1, guesses*1)
+		output_errors = np.subtract(winner_index, guesses)
 
 		# Update the weights
 		for i,row in enumerate(inputs):
