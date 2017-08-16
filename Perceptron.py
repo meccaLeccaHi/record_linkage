@@ -46,7 +46,7 @@ class Perceptron(linkage_tools.Linker):
 		# Convert inputs list to 2d array and transpose
 		inputs = np.array(inputs_list, ndmin=2)
 		inputs = np.concatenate((inputs,np.repeat(1, len(inputs[:,1]))[:, None]), axis=1) # Add bias input
-
+	
 		guesses, _ = self.query(inputs_list, input_ids)		
 
 		# Output error (answer - guess)
@@ -57,8 +57,10 @@ class Perceptron(linkage_tools.Linker):
 		#	self.weights += self.lr * output_errors[i] * row
 		#	#print 'output_errors[:,i] : ' + str(output_errors[:,i])
 		#	#print self.lr * output_errors[:,i] * row
-		self.weights += self.lr * np.dot(output_errors, inputs)
-		
+
+		#self.weights += self.lr * np.dot(output_errors, inputs)
+		self.weights = self.weights + self.lr * np.dot(output_errors, inputs)
+
 		# signals = self.lr * output_errors[0] * row[0]
 		# print 'guess/answers/signals : ' + str([guesses[0],winner_index[0],signals])
 
@@ -83,6 +85,7 @@ class Perceptron(linkage_tools.Linker):
 
 		# Maximize pair-wise linkage scores (minimize cost with Munkres)
 		link_list = input_ids.assign(linkage_cost = perc_cost)
+		#print 'link_list : ' + str(link_list)	
 		winner_index = self.maximize(link_list)
 		
 		# Return boolean array
