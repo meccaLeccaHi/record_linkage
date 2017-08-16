@@ -27,11 +27,16 @@ class NeuralNetwork(linkage_tools.Linker):
 		# activation function is the sigmoid function
 		self.activation_function = lambda x: scipy.special.expit(x)
 
+		self.precision_list = []
+		self.recall_list = []
+		self.iter_qual_list = [0.0]
+
 	# train the neural network
-	def train(self, inputs_list, targets_list):
+	def train(self, inputs_list, truth_list, guess_list):
 		# convert inputs list to 2d array
-		inputs = np.array(inputs_list, ndmin=2).T
-		targets = np.array(targets_list, ndmin=2).T
+		inputs = np.array(inputs_list, ndmin=2, dtype=np.float).T
+		truth = np.array(truth_list, ndmin=2, dtype=np.float)
+		guesses = np.array(guess_list, ndmin=2, dtype=np.float)
 
 		# calculate signals into hidden layer
 		hidden_inputs = np.dot(self.wih, inputs)
@@ -43,21 +48,21 @@ class NeuralNetwork(linkage_tools.Linker):
 		# calculate the signals emerging from final output layer
 		final_outputs = self.activation_function(final_inputs)
 
-		# output layer error is the (target - actual)
-		output_errors = targets - final_outputs
+		# output layer error is the (truth - guesses)
+		output_errors = truth - guesses
 		# hidden layer error is the output_errors, split by weights, recombined at hidden nodes
 		hidden_errors = np.dot(self.who.T, output_errors) 
 
 		# update the weights for the links between the hidden and output layers
-		self.who += self.lr * np.dot((output_errors * final_outputs * (1.0 - final_outputs)), np.transpose(hidden_outputs))
+		self.who = self.who + self.lr * np.dot((output_errors * final_outputs * (1.0 - final_outputs)), np.transpose(hidden_outputs))
 
 		# update the weights for the links between the input and hidden layers
-		self.wih += self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), np.transpose(inputs))
+		self.wih = self.wih + self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), np.transpose(inputs))
 
 	# query the neural network
-	def query(self, inputs_list):
+	def query(self, inputs_list, input_ids):
 		# convert inputs list to 2d array
-		inputs = np.array(inputs_list, ndmin=2).T
+		inputs = np.array(inputs_list, ndmin=2, dtype=np.float).T
 
 		# calculate signals into hidden layer
 		hidden_inputs = np.dot(self.wih, inputs)
@@ -66,10 +71,14 @@ class NeuralNetwork(linkage_tools.Linker):
 
 		# calculate signals into final output layer
 		final_inputs = np.dot(self.who, hidden_outputs)
+		final_inputs = final_inputs[0] # un-nest nested list
 		# calculate the signals emerging from final output layer
 		final_outputs = self.activation_function(final_inputs)
 
-		return final_outputs
+		# Convert to binary output
+		class_outputs = final_outputs>.5
+
+		return class_outputs.T, final_outputs.T
 
 '''
 # number of input, hidden and output nodes
@@ -82,7 +91,6 @@ learning_rate = 0.3
 
 # create instance of neural network
 n = neuralNetwork(input_nodes,hidden_nodes,output_nodes, learning_rate)
-In [5]:
 # test query (doesn't mean anything useful yet)
 n.query([1.0, 0.5, -1.5])
 '''

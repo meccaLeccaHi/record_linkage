@@ -19,7 +19,7 @@ class Probabilistic(linkage_tools.Linker):
 		# Activation function is the logarithmic function
 		self.activation_function = lambda x: np.sum(np.log(x))
 
-		self.prec_list = []
+		self.precision_list = []
 		self.recall_list = []
 		self.iter_qual_list = [0.0]
 		
