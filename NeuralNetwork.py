@@ -33,31 +33,35 @@ class NeuralNetwork(linkage_tools.Linker):
 
 	# train the neural network
 	def train(self, inputs_list, truth_list, guess_list):
-		# convert inputs list to 2d array
-		inputs = np.array(inputs_list, ndmin=2, dtype=np.float).T
-		truth = np.array(truth_list, ndmin=2, dtype=np.float)
-		guesses = np.array(guess_list, ndmin=2, dtype=np.float)
+		record_list = inputs_list*.98+.01 # scale inputs to between .01 and .99
+		truth_list = truth_list*.98+.01
+		for record,truth in zip(record_list.values.tolist(),truth_list):
+    		#inputs = np.asfarray(record)
+			# convert inputs list to 2d array
+			inputs = np.array(record, ndmin=2, dtype=np.float).T
+			truth = np.array(truth, ndmin=2, dtype=np.float)
+			guesses = np.array(guess_list, ndmin=2, dtype=np.float)
 
-		# calculate signals into hidden layer
-		hidden_inputs = np.dot(self.wih, inputs)
-		# calculate the signals emerging from hidden layer
-		hidden_outputs = self.activation_function(hidden_inputs)
+			# calculate signals into hidden layer
+			hidden_inputs = np.dot(self.wih, inputs)
+			# calculate the signals emerging from hidden layer
+			hidden_outputs = self.activation_function(hidden_inputs)
 
-		# calculate signals into final output layer
-		final_inputs = np.dot(self.who, hidden_outputs)
-		# calculate the signals emerging from final output layer
-		final_outputs = self.activation_function(final_inputs)
+			# calculate signals into final output layer
+			final_inputs = np.dot(self.who, hidden_outputs)
+			# calculate the signals emerging from final output layer
+			final_outputs = self.activation_function(final_inputs)
 
-		# output layer error is the (truth - guesses)
-		output_errors = truth - guesses
-		# hidden layer error is the output_errors, split by weights, recombined at hidden nodes
-		hidden_errors = np.dot(self.who.T, output_errors) 
+			# output layer error is the (truth - guesses)
+			output_errors = truth - final_outputs
+			# hidden layer error is the output_errors, split by weights, recombined at hidden nodes
+			hidden_errors = np.dot(self.who.T, output_errors) 
 
-		# update the weights for the links between the hidden and output layers
-		self.who = self.who + self.lr * np.dot((output_errors * final_outputs * (1.0 - final_outputs)), np.transpose(hidden_outputs))
+			# update the weights for the links between the hidden and output layers
+			self.who += self.lr * np.dot((output_errors * final_outputs * (1.0 - final_outputs)), np.transpose(hidden_outputs))
 
-		# update the weights for the links between the input and hidden layers
-		self.wih = self.wih + self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), np.transpose(inputs))
+			# update the weights for the links between the input and hidden layers
+			self.wih += self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), np.transpose(inputs))
 
 	# query the neural network
 	def query(self, inputs_list, input_ids):
@@ -77,6 +81,8 @@ class NeuralNetwork(linkage_tools.Linker):
 
 		# Convert to binary output
 		class_outputs = final_outputs>.5
+
+		# print class_outputs.T # debugging
 
 		return class_outputs.T, final_outputs.T
 
