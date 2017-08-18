@@ -7,9 +7,9 @@ class Linker(Munkres):
 	def __init__(self):
 		self.connection = pymysql.connect(host='127.0.0.1',
 							user='root',
-							db='current',
+							db='mdc_2017_08_11', 
 							charset='utf8mb4',
-							cursorclass=pymysql.cursors.DictCursor)
+							cursorclass=pymysql.cursors.DictCursor) #db='current',
 
 	def exec_sql(self, sql):
 		''' Executes a sql command (string arg) and returns result as pandas dataframe '''
@@ -36,32 +36,42 @@ class Linker(Munkres):
 		nom_newb_id = list(link_cost_mat['linkage_cost'].index) # Get row names
 		nom_bc_id = link_cost_mat['linkage_cost'].columns.tolist() # Get column names
 
-		return np.concatenate([np.where((link_list['newb_id']==nom_newb_id[row])&
+		max_ids = [np.where((link_list['newb_id']==nom_newb_id[row])&
                                                  (link_list['bc_id']==nom_bc_id[col])) 
-                                        for row,col in indexes]).ravel()
+                                        for row,col in indexes]
+
+		return np.concatenate(max_ids).ravel()
 		
-	def prec_recall(self, linkage_score, theta, true_matches):
+	def prec_recall(self, linkage_score, theta_range, true_matches):
 		''' 
-		Get precision and recall from linkage data
+		Get precision and recall from linkage data on each iteration
 		- Precision: the percent of pairs with a score above theta that are real matches
 		- Recall: the percent of known matched pairs that get a score above theta
 		'''
 		precision = []
 		recall = []
+		
+		theta = np.percentile(linkage_score.loc[true_matches],theta_range)
 
 		for cutoff in theta:
-		    winners = (linkage_score>cutoff)
-		    #winners = (big_bool['linkage_score']>cutoff)&bool_table['pair_match']
-		    
-		    # - numerator: number of NOMINATED pairs with a score above theta that are real matches
-		    real_picks = sum(winners&true_matches)
-		    # - denominater: number of NOMINATED pairs with a score above theta
-		    picks = sum(winners)
-		    precision.append(real_picks/float(picks)*100)
+			winners = (linkage_score>cutoff)
+			#winners = (big_bool['linkage_score']>cutoff)&bool_table['pair_match']
+		
+			# - numerator: number of NOMINATED pairs with a score above theta that are real matches
+			real_picks = sum(winners&true_matches)
+			# - denominater: number of NOMINATED pairs with a score above theta
+			picks = sum(winners)
+			precision.append(real_picks/float(picks)*100)
 
-		    # - numerator: number of NOMINATED pairs with a score above theta that are real matches
-		    # - denominater: number of pairs that are real matches
-		    real_matches = true_matches.sum()
-		    recall.append(real_picks/float(real_matches)*100)
-		    
-		return precision,recall
+			# - numerator: number of NOMINATED pairs with a score above theta that are real matches
+			# - denominater: number of pairs that are real matches
+			real_matches = true_matches.sum()
+			recall.append(real_picks/float(real_matches)*100)
+		
+		self.precision_list.append(precision)
+		self.recall_list.append(recall)	
+		#self.prev_iter_qual = self.cur_iter_qual
+		self.iter_qual_list.append(np.nanmean(precision) + np.nanmean(recall))	
+		#self.cur_iter_qual = np.nanmean(precision) + np.nanmean(recall)
+
+
