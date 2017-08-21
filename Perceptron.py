@@ -39,7 +39,7 @@ class Perceptron(linkage_tools.Linker):
 		self.recall_list = []
 		self.iter_qual_list = [0.0]
 
-	# Train the neural network
+	# Train the perceptron
 	def train(self, inputs_list, truth, guesses):
 		''' e.g. pt.train(bool_table[feature_vals],bool_table['real_match'],bool_table['match_pt'])'''
 
@@ -85,15 +85,11 @@ class Perceptron(linkage_tools.Linker):
 
 		# Maximize pair-wise linkage scores (minimize cost with Munkres)
 		link_list = input_ids.assign(linkage_cost = perc_cost)
-		#print 'link_list : ' + str(link_list)	
 		winner_ind = self.maximize(link_list)
 		
 		# Return boolean array
 		winners = np.zeros(len(link_list), np.bool)
 		winners[winner_ind] = 1
-
-		#print 'activation function outputs : ' + str(np.where(final_outputs))
-		#print 'munkres outputs : ' + str(winner_ind)
 
 		return winners, perc_score
 

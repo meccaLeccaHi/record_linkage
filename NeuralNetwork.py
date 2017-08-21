@@ -79,12 +79,21 @@ class NeuralNetwork(linkage_tools.Linker):
 		# calculate the signals emerging from final output layer
 		final_outputs = self.activation_function(final_inputs)
 
+		# Convert to linkage score to linkage 'cost'
+		score_cost = abs(final_outputs - final_outputs.max())
+
+		# Maximize pair-wise linkage scores (minimize cost with Munkres)
+		link_list = input_ids.assign(linkage_cost = score_cost)
+		winner_ind = self.maximize(link_list)
+
+		# Return boolean array
+		winners = np.zeros(len(link_list), np.bool)
+		winners[winner_ind] = 1
+
 		# Convert to binary output
 		class_outputs = final_outputs>.5
 
-		# print class_outputs.T # debugging
-
-		return class_outputs.T, final_outputs.T
+		return winners.T, final_outputs.T # class_outputs.T
 
 '''
 # number of input, hidden and output nodes
