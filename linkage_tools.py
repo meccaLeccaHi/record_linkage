@@ -54,9 +54,10 @@ class Linker(Munkres):
 		theta = np.percentile(linkage_score.loc[true_matches],theta_range)
 
 		for cutoff in theta:
-			winners = (linkage_score>cutoff)
-			#winners = (big_bool['linkage_score']>cutoff)&bool_table['pair_match']
-		
+			
+			winners = (linkage_score>=cutoff)
+			#winners = (big_bool['linkage_score']>cutoff)&big_bool['pair_match']
+
 			# - numerator: number of NOMINATED pairs with a score above theta that are real matches
 			real_picks = sum(winners&true_matches)
 			# - denominater: number of NOMINATED pairs with a score above theta
@@ -67,11 +68,10 @@ class Linker(Munkres):
 			# - denominater: number of pairs that are real matches
 			real_matches = true_matches.sum()
 			recall.append(real_picks/float(real_matches)*100)
-		
+					
 		self.precision_list.append(precision)
 		self.recall_list.append(recall)	
-		#self.prev_iter_qual = self.cur_iter_qual
 		self.iter_qual_list.append(np.nanmean(precision) + np.nanmean(recall))	
-		#self.cur_iter_qual = np.nanmean(precision) + np.nanmean(recall)
+
 
 

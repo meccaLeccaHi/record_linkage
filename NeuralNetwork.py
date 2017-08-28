@@ -8,9 +8,18 @@ import linkage_tools # for the Linker superclass
 class NeuralNetwork(linkage_tools.Linker):
 		
 	# initialise the neural network
-	def __init__(self, inputnodes, hiddennodes, outputnodes, learningrate):
+	def __init__(self, features, hiddennodes, outputnodes, **keywords):
+		
+		# Set a classifier descriptors
+		self.classifier_type = 'neural network'
+		self.features = features
+		if ('learningrate' in keywords):
+			self.lr = keywords['learningrate'] # Learning rate
+		else:
+			self.lr = 0.1
+
 		# set number of nodes in each input, hidden, output layer
-		self.inodes = inputnodes
+		self.inodes = len(features)
 		self.hnodes = hiddennodes
 		self.onodes = outputnodes
 
@@ -20,9 +29,6 @@ class NeuralNetwork(linkage_tools.Linker):
 		# w12 w22 etc 
 		self.wih = np.random.normal(0.0, pow(self.inodes, -0.5), (self.hnodes, self.inodes))
 		self.who = np.random.normal(0.0, pow(self.hnodes, -0.5), (self.onodes, self.hnodes))
-
-		# learning rate
-		self.lr = learningrate
 
 		# activation function is the sigmoid function
 		self.activation_function = lambda x: scipy.special.expit(x)
@@ -36,11 +42,10 @@ class NeuralNetwork(linkage_tools.Linker):
 		record_list = inputs_list*.98+.01 # scale inputs to between .01 and .99
 		truth_list = truth_list*.98+.01
 		for record,truth in zip(record_list.values.tolist(),truth_list):
-    		#inputs = np.asfarray(record)
+
 			# convert inputs list to 2d array
 			inputs = np.array(record, ndmin=2, dtype=np.float).T
 			truth = np.array(truth, ndmin=2, dtype=np.float)
-			guesses = np.array(guess_list, ndmin=2, dtype=np.float)
 
 			# calculate signals into hidden layer
 			hidden_inputs = np.dot(self.wih, inputs)
@@ -75,7 +80,7 @@ class NeuralNetwork(linkage_tools.Linker):
 
 		# calculate signals into final output layer
 		final_inputs = np.dot(self.who, hidden_outputs)
-		final_inputs = final_inputs[0] # un-nest nested list
+
 		# calculate the signals emerging from final output layer
 		final_outputs = self.activation_function(final_inputs)
 
@@ -83,7 +88,7 @@ class NeuralNetwork(linkage_tools.Linker):
 		score_cost = abs(final_outputs - final_outputs.max())
 
 		# Maximize pair-wise linkage scores (minimize cost with Munkres)
-		link_list = input_ids.assign(linkage_cost = score_cost)
+		link_list = input_ids.assign(linkage_cost = score_cost.T)
 		winner_ind = self.maximize(link_list)
 
 		# Return boolean array

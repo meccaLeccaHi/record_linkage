@@ -23,14 +23,22 @@ class Perceptron(linkage_tools.Linker):
     """
 
 	# Initialize the perceptron
-	def __init__(self, inputnodes, learningrate):
+	def __init__(self, features, **keywords):
 
-		self.inodes = inputnodes # Set number of nodes in input layer
-		self.lr = learningrate # Learning rate
+		# Set a classifier descriptor
+		self.classifier_type = 'perceptron'
+		self.features = features
+		self.inodes = len(features) # Set number of nodes in input layer
+
+		if ('learningrate' in keywords):
+			self.lr = keywords['learningrate'] # Learning rate
+		else:
+			self.lr = 0.01
+
 		self.tss = [] # Initialize sum-of-squares
 
 		# Initialize perceptron weights to random values (1..n+1 to accomodate bias neuron)
-		self.weights = np.random.uniform(low=-0.01, high=0.01, size=inputnodes+1)
+		self.weights = np.random.uniform(low=-0.01, high=0.01, size=len(features)+1)
 
 		# Activation function is the sigmoid function
 		self.activation_function = lambda x: (x>0)*1.0

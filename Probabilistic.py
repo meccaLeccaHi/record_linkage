@@ -7,14 +7,16 @@ import linkage_tools # for the Linker superclass
 class Probabilistic(linkage_tools.Linker):
 		
 	# Initialize the probabilistic linker
-	def __init__(self, inputnodes):
-
-		# Set number of nodes in input layer
-		self.inodes = inputnodes
+	def __init__(self, features, **keywords):
+		
+		# Set a classifier descriptor
+		self.classifier_type = 'probabilistic linker'
+		self.features = features
+		self.inodes = len(features) # Set number of nodes in input layer
 
 		# Initialize m- and u-probabilites to random values
-		self.m_probs = np.repeat(.9, inputnodes)
-		self.u_probs = np.repeat(.1, inputnodes)
+		self.m_probs = np.repeat(.9, len(features))
+		self.u_probs = np.repeat(.1, len(features))
 
 		# Activation function is the logarithmic function
 		self.activation_function = lambda x: np.sum(np.log(x))
@@ -24,22 +26,22 @@ class Probabilistic(linkage_tools.Linker):
 		self.iter_qual_list = [0.0]
 		
 	# Train the probabilistic linker
-	def train(self, inputs_list, winner_index):
+	def train(self, inputs_list, truth, guesses):
 		'''e.g. pr.train(bool_table[feature_vals],bool_table['pair_match'])'''
 
 		# Convert inputs list to 2d array
 		inputs = np.array(inputs_list, ndmin=2)
 		
 		loser_index = np.ones(len(inputs_list), np.bool)
-		loser_index[np.where(winner_index)] = 0
+		loser_index[np.where(truth)] = 0
 		
 		# Count number of matches for each field
 		u_match = [sum(i) for i in zip(*inputs[np.where(loser_index)])]
-		m_match = [sum(i) for i in zip(*inputs[np.where(winner_index)])]
+		m_match = [sum(i) for i in zip(*inputs[np.where(truth)])]
 
 		# Count total number of pairs
 		u_pair = np.sum(loser_index)
-		m_pair = np.sum(winner_index)
+		m_pair = np.sum(truth)
 
 		# Update m- and u-probabilities
 		self.m_probs = np.true_divide(m_match,m_pair)
