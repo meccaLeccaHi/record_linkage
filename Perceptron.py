@@ -100,17 +100,3 @@ class Perceptron(linkage_tools.Linker):
 		winners[winner_ind] = 1
 
 		return winners, perc_score
-
-'''
-# number of input nodes
-input_nodes = 5
-
-# learning rate is 0.3
-learning_rate = 0.3
-
-# create instance of perceptron
-p = Perceptron(input_nodes, learning_rate)
-# test query (doesn't mean anything useful yet)
-p.query([1.0, 0.5, -1.5])
-'''
-

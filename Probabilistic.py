@@ -76,16 +76,3 @@ class Probabilistic(linkage_tools.Linker):
 		winners[winner_index] = 1
 
 		return winners, linkage_score
-
-'''
-# number of input nodes
-input_nodes = 5
-
-# learning rate is 0.3
-learning_rate = 0.3
-
-# create instance of perceptron
-p = Perceptron(input_nodes, learning_rate)
-# test query (doesn't mean anything useful yet)
-p.query([1.0, 0.5, -1.5])
-'''

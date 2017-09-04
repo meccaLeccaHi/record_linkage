@@ -82,7 +82,9 @@ class NeuralNetwork(linkage_tools.Linker):
 		final_inputs = np.dot(self.who, hidden_outputs)
 
 		# calculate the signals emerging from final output layer
-		final_outputs = self.activation_function(final_inputs)
+		final_outputs = self.activation_fun### Morphing face images
+21
+An example of an unsupervised face morph created with this tool. ction(final_inputs)
 
 		# Convert to linkage score to linkage 'cost'
 		score_cost = abs(final_outputs - final_outputs.max())
@@ -99,18 +101,3 @@ class NeuralNetwork(linkage_tools.Linker):
 		class_outputs = final_outputs>.5
 
 		return winners.T, final_outputs.T # class_outputs.T
-
-'''
-# number of input, hidden and output nodes
-input_nodes = 3
-hidden_nodes = 3
-output_nodes = 3
-
-# learning rate is 0.3
-learning_rate = 0.3
-
-# create instance of neural network
-n = neuralNetwork(input_nodes,hidden_nodes,output_nodes, learning_rate)
-# test query (doesn't mean anything useful yet)
-n.query([1.0, 0.5, -1.5])
-'''
