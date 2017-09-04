@@ -1,7 +1,7 @@
 # record_linkage
 
 #### Python scripts for unsupervised, pair-wise linkage of records from multiple databases.
-These scripts make use of numerous probabilistic/ML algorithms commonly employed in record linkage.
+These scripts make use of numerous probabilistic/ML algorithms commonly employed in record linkage. The output of field comparisons (using exact or 'fuzzy' matching) is fed into each network, for each possible pair of records between the 2 databases. During training, the target of each network is the actual relationship between 2 records (i.e. match/not match).
 
 ## - Data sources (updated monthly/semi-annually):
 * **Patient discharge data** from participating hospital/state-agency.  
