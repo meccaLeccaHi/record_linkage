@@ -8,6 +8,9 @@ These scripts make use of numerous probabilistic/ML algorithms commonly employed
 * **Birth certificate data** from state Vital Records department.  
 Records are matched using both simple field comparisons, as well as complex comparisons that have several levels of matching, which allows the classifier to discriminate more accurately. 
 
+## Matching:
+**Munkres***
+
 ## - Record-linkage algorithms:
 * **Probabilistic record linkage**
 Probablistic approach described by Jaro<sup>[1]</sup> for linking of large public health data files. 
