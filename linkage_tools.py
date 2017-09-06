@@ -2,10 +2,18 @@ import pymysql
 import pandas as pd
 import numpy as np
 from munkres import Munkres
+import socket
 
 class Linker(Munkres):
 	def __init__(self):
-		self.connection = pymysql.connect(host='127.0.0.1',
+
+		# Initialize connection to sql server
+		if socket.gethostname()=='adam-server':
+			host = 'localhost'
+		else:
+			host = '127.0.0.1'
+		
+		self.connection = pymysql.connect(host=host,
 							user='root',
 							db='mdc_2017_08_11', 
 							charset='utf8mb4',
@@ -25,6 +33,11 @@ class Linker(Munkres):
 		df1.drop('_tmpkey', axis=1, inplace=True)
 		df2.drop('_tmpkey', axis=1, inplace=True)
 		return return_val
+
+	def digitize_series(self, vals, bins):
+		''' Return numpy.digitize output as pandas Series
+			Example usage: digitize_series(cross_table['birth_weight'],bw_bins) '''
+		return(pd.Series(np.digitize(list(vals),bins)))
 
 	def maximize(self, link_list):
 		''' Maximize linkage pairing with Munkres algo '''
