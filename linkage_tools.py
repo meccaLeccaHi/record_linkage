@@ -15,7 +15,7 @@ class Linker(Munkres):
 		
 		self.connection = pymysql.connect(host=host,
 							user='root',
-							db='mdc_2017_08_11', 
+							db='mdc_2017_09_05', 
 							charset='utf8mb4',
 							cursorclass=pymysql.cursors.DictCursor) 
 
