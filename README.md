@@ -8,8 +8,8 @@ These scripts make use of numerous probabilistic/ML algorithms commonly employed
 * **Birth certificate data** from state Vital Records department.  
 Records are matched using both simple field comparisons, as well as complex comparisons that have several levels of matching, which allows the classifier to discriminate more accurately. 
 
-## Matching:
-**Munkres***
+### - Maximizing pairing scores (minimizing cost):
+* Maximize pairing with **Kuhn-Munkres** (i.e. Hungarian) Algorithm [more info]
 
 ## - Record-linkage algorithms:
 * **Probabilistic record linkage**
@@ -24,3 +24,4 @@ Artificial neural network with backpropagation<sup>[3]</sup>.
 2. Wilson, D. R. (2011, July). Beyond probabilistic record linkage: Using neural networks and complex features to improve genealogical record linkage. In Neural Networks (IJCNN), The 2011 International Joint Conference on (pp. 9-14). IEEE.
 3. (Various sources including:) Raschka, S. (2015). Python machine learning. Packt Publishing Ltd. Chicago	
 
+[more info]: https://pypi.python.org/pypi/munkres/
