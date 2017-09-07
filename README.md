@@ -9,7 +9,7 @@ These scripts make use of numerous probabilistic/ML algorithms commonly employed
 Records are matched using both simple field comparisons, as well as complex comparisons that have several levels of matching, which allows the classifier to discriminate more accurately. 
 
 ### - Maximizing pairing scores (minimizing cost):
-* Maximize pairing with **Kuhn-Munkres** (i.e. Hungarian) Algorithm [more info]
+* Maximize pairing with **Kuhn-Munkres** (i.e. Hungarian) Algorithm ([more info])
 
 ## - Record-linkage algorithms:
 * **Probabilistic record linkage**
