@@ -17,7 +17,9 @@ class Linker(Munkres):
 							user='root',
 							db='mdc_2017_08_11', 
 							charset='utf8mb4',
-							cursorclass=pymysql.cursors.DictCursor) #db='current',
+							cursorclass=pymysql.cursors.DictCursor) 
+
+#db= 'current', db='mdc_2017_08_11', db='mdc_2017_09_05', 
 
 	def exec_sql(self, sql):
 		''' Executes a sql command (string arg) and returns result as pandas dataframe '''
