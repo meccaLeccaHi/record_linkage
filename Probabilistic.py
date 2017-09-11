@@ -23,7 +23,7 @@ class Probabilistic(linkage_tools.Linker):
 
 		self.precision_list = []
 		self.recall_list = []
-		self.iter_qual_list = [0.0]
+		self.fscore_list = []
 		
 	# Train the probabilistic linker
 	def train(self, inputs_list, truth, guesses):

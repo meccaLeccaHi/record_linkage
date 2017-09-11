@@ -57,36 +57,78 @@ class Linker(Munkres):
 
 		return np.concatenate(max_ids).ravel()
 		
-	def prec_recall(self, linkage_score, theta_range, true_matches):
-		''' 
-		Get precision and recall from linkage data on each iteration
-		- Precision: the percent of pairs with a score above theta that are real matches
-		- Recall: the percent of known matched pairs that get a score above theta
+	def test_classifier(self, classifier_matches, true_matches):
+
+		match_guess = np.where(classifier_matches)[0]
+		match_answer = np.where(true_matches)[0]
+		no_match_guess = np.where(np.logical_not(classifier_matches))[0]
+		no_match_answer = np.where(np.logical_not(true_matches))[0]
+
 		'''
-		precision = []
-		recall = []
+		True positives. These are the record pairs that have been classified as matches and
+		that are true matches. These are the pairs where both records refer to the same
+		entity.
+		'''
+		TP = sum(match_guess==match_answer)
+
+		'''
+		False positives. These are the record pairs that have been classified as matches,
+		but they are not true matches. The two records in these pairs refer to two different
+		entities. The classifier has made a wrong decision with these record pairs. These
+		pairs are also known as false matches.
+		'''
+		FP = sum(match_guess!=match_answer)
+
+		'''
+		True negatives. These are the record pairs that have been classified as non-matches,
+		and they are true non-matches. The two records in pairs in this category do refer
+		to two different real-world entities.
+		'''
+		TN = sum(no_match_guess==no_match_answer)
+
+		'''
+		False negatives. These are the record pairs that have been classified as non-matches,
+		but they are actually true matches. The two records in these pairs refer to the same
+		entity. The classifier has made a wrong decision with these record pairs. These
+		pairs are also known as false non-matches.
+		'''
+		FN = sum(no_match_guess!=no_match_answer)
 		
-		theta = np.percentile(linkage_score.loc[true_matches],theta_range)
+		'''
+		Precision: proportion of how many of the classified matches (TP + FP) have been correctly
+		classified as true matches (TP) a.k.a. positive-predictive value
+		'''
+		precision = TP/float(TP + FP)
 
-		for cutoff in theta:
+		'''
+		Recall: measures the proportion of true matches (TP + FN) that have been classified correctly 			(TP). It thus measures how many of the actual true matching record pairs have been correctly
+		classified as matches. a.k.a. true-positive rate or sensitivity
+		'''
+		recall = TP/float(TP + FN)
+
+		'''
+		F-measure: calculates the harmonic mean between precision and recall. The f-measure combines
+		precision and recall and only has a high value if both precision and recall are high. Aiming
+		to achieve a high f-measure requires to find the best compromise between precision and recall.
+		'''
+		fscore = 2*((precision*recall)/(precision+recall))
+
+		'''
+		# - numerator: number of NOMINATED pairs with a score above theta that are real matches
+		real_picks = sum(winners&true_matches)
+		# - denominater: number of NOMINATED pairs with a score above theta
+		picks = sum(winners)
+		precision.append(real_picks/float(picks)*100)
+
+		# - numerator: number of NOMINATED pairs with a score above theta that are real matches
+		# - denominater: number of pairs that are real matches
+		real_matches = true_matches.sum()
+		recall.append(real_picks/float(real_matches)*100)
+		'''
 			
-			winners = (linkage_score>=cutoff)
-			#winners = (big_bool['linkage_score']>cutoff)&big_bool['pair_match']
-
-			# - numerator: number of NOMINATED pairs with a score above theta that are real matches
-			real_picks = sum(winners&true_matches)
-			# - denominater: number of NOMINATED pairs with a score above theta
-			picks = sum(winners)
-			precision.append(real_picks/float(picks)*100)
-
-			# - numerator: number of NOMINATED pairs with a score above theta that are real matches
-			# - denominater: number of pairs that are real matches
-			real_matches = true_matches.sum()
-			recall.append(real_picks/float(real_matches)*100)
-					
 		self.precision_list.append(precision)
 		self.recall_list.append(recall)	
-		self.iter_qual_list.append(np.nanmean(precision) + np.nanmean(recall))	
+		self.fscore_list.append(fscore)
 
 
 
