@@ -113,22 +113,13 @@ class Linker(Munkres):
 		'''
 		fscore = 2*((precision*recall)/(precision+recall))
 
-		'''
-		# - numerator: number of NOMINATED pairs with a score above theta that are real matches
-		real_picks = sum(winners&true_matches)
-		# - denominater: number of NOMINATED pairs with a score above theta
-		picks = sum(winners)
-		precision.append(real_picks/float(picks)*100)
-
-		# - numerator: number of NOMINATED pairs with a score above theta that are real matches
-		# - denominater: number of pairs that are real matches
-		real_matches = true_matches.sum()
-		recall.append(real_picks/float(real_matches)*100)
-		'''
+		# Standard ML accuracy measure
+		accuracy = (TP + TN)/(TP + FP + TN + FN)
 			
 		self.precision_list.append(precision)
 		self.recall_list.append(recall)	
 		self.fscore_list.append(fscore)
+		self.accuracy_list.append(accuracy)
 
 
 

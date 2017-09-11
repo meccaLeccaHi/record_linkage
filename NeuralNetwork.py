@@ -36,6 +36,7 @@ class NeuralNetwork(linkage_tools.Linker):
 		self.precision_list = []
 		self.recall_list = []
 		self.fscore_list = []
+		self.accuracy_list = []
 
 	# train the neural network
 	def train(self, inputs_list, truth_list, guess_list):

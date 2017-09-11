@@ -46,6 +46,7 @@ class Perceptron(linkage_tools.Linker):
 		self.precision_list = []
 		self.recall_list = []
 		self.fscore_list = []
+		self.accuracy_list = []
 
 	# Train the perceptron
 	def train(self, inputs_list, truth, guesses):
