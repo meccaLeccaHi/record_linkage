@@ -111,10 +111,10 @@ class Linker(Munkres):
 		precision and recall and only has a high value if both precision and recall are high. Aiming
 		to achieve a high f-measure requires to find the best compromise between precision and recall.
 		'''
-		fscore = 2*((precision*recall)/(precision+recall))
+		fscore = 2*((precision*recall)/float(precision+recall))
 
 		# Standard ML accuracy measure
-		accuracy = (TP + TN)/(float(TP + FP + TN + FN)*100)
+		accuracy = ((TP + TN)/float(TP + FP + TN + FN))*100
 			
 		self.precision_list.append(precision)
 		self.recall_list.append(recall)	
