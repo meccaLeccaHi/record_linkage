@@ -114,7 +114,7 @@ class Linker(Munkres):
 		fscore = 2*((precision*recall)/(precision+recall))
 
 		# Standard ML accuracy measure
-		accuracy = (TP + TN)/float(TP + FP + TN + FN)
+		accuracy = (TP + TN)/(float(TP + FP + TN + FN)*100)
 			
 		self.precision_list.append(precision)
 		self.recall_list.append(recall)	
