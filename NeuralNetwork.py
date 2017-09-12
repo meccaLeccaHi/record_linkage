@@ -33,10 +33,15 @@ class NeuralNetwork(linkage_tools.Linker):
 		# activation function is the sigmoid function
 		self.activation_function = lambda x: scipy.special.expit(x)
 
-		self.precision_list = []
-		self.recall_list = []
-		self.fscore_list = []
-		self.accuracy_list = []
+		self.train_precision_list = []
+		self.train_recall_list = []
+		self.train_fscore_list = []
+		self.train_accuracy_list = []
+
+		self.val_precision_list = []
+		self.val_recall_list = []
+		self.val_fscore_list = []
+		self.val_accuracy_list = []
 
 	# train the neural network
 	def train(self, inputs_list, truth_list, guess_list):
