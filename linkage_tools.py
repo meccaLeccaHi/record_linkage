@@ -101,7 +101,7 @@ class Linker(Munkres):
 		precision = TP/float(TP + FP)
 
 		'''
-		Recall: measures the proportion of true matches (TP + FN) that have been classified correctly 			(TP). It thus measures how many of the actual true matching record pairs have been correctly
+		Recall: measures the proportion of true matches (TP + FN) that have been classified correctly 		(TP). It thus measures how many of the actual true matching record pairs have been correctly
 		classified as matches. a.k.a. true-positive rate or sensitivity
 		'''
 		recall = TP/float(TP + FN)
@@ -115,11 +115,39 @@ class Linker(Munkres):
 
 		# Standard ML accuracy measure
 		accuracy = ((TP + TN)/float(TP + FP + TN + FN))*100
-			
-		self.precision_list.append(precision)
-		self.recall_list.append(recall)	
-		self.fscore_list.append(fscore)
-		self.accuracy_list.append(accuracy)
 
+		self.train_precision_list.append(precision)
+		self.train_recall_list.append(recall)
+		self.train_fscore_list.append(fscore)
+		self.train_accuracy_list.append(accuracy)
+
+	def val_classifier(self, classifier_matches, true_matches):
+
+		match_guess = np.where(classifier_matches)[0]
+		match_answer = np.where(true_matches)[0]
+		no_match_guess = np.where(np.logical_not(classifier_matches))[0]
+		no_match_answer = np.where(np.logical_not(true_matches))[0]
+
+		TP = sum(match_guess==match_answer)
+		FP = sum(match_guess!=match_answer)
+		TN = sum(no_match_guess==no_match_answer)
+		FN = sum(no_match_guess!=no_match_answer)
+		
+		# Precision
+		precision = TP/float(TP + FP)
+
+		# Recall
+		recall = TP/float(TP + FN)
+
+		# F-measure
+		fscore = 2*((precision*recall)/float(precision+recall))
+
+		# Standard ML accuracy measure
+		accuracy = ((TP + TN)/float(TP + FP + TN + FN))*100
+
+		self.val_precision_list.append(precision)
+		self.val_recall_list.append(recall)	
+		self.val_fscore_list.append(fscore)
+		self.val_accuracy_list.append(accuracy)
 
 
