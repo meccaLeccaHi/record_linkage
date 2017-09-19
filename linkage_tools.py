@@ -92,7 +92,7 @@ class Linker(Munkres):
 		entity. The classifier has made a wrong decision with these record pairs. These
 		pairs are also known as false non-matches.
 		'''
-		FN = sum(no_match_guess!=no_match_answer)
+		FN = len(set(no_match_guess)-set(no_match_answer)) # FP
 		
 		'''
 		Precision: proportion of how many of the classified matches (TP + FP) have been correctly
@@ -114,8 +114,8 @@ class Linker(Munkres):
 		fscore = 2*((precision*recall)/float(precision+recall))
 
 		# Standard ML accuracy measure
-		accuracy = ((TP + TN)/float(TP + FP + TN + FN))*100
-
+		accuracy = ((TP + TN)/float(TP + FP + TN + FN))*100 
+        
 		self.train_precision_list.append(precision)
 		self.train_recall_list.append(recall)
 		self.train_fscore_list.append(fscore)
@@ -131,7 +131,7 @@ class Linker(Munkres):
 		TP = sum(match_guess==match_answer)
 		FP = sum(match_guess!=match_answer)
 		TN = sum(no_match_guess==no_match_answer)
-		FN = sum(no_match_guess!=no_match_answer)
+		FN = len(set(no_match_guess)-set(no_match_answer)) # FP 
 		
 		# Precision
 		precision = TP/float(TP + FP)
