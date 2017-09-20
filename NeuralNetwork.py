@@ -1,4 +1,4 @@
-# python NeuralNetwork class (modeled after examples in 'Make Your Own Neural Network'[2016]) 
+# python NeuralNetwork class
 
 import numpy as np
 import scipy.special # for the sigmoid function expit()
