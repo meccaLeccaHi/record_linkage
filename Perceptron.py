@@ -43,15 +43,9 @@ class Perceptron(linkage_tools.Linker):
 		# Activation function is the sigmoid function
 		self.activation_function = lambda x: (x>0)*1.0
 
-		self.train_precision_list = []
-		self.train_recall_list = []
-		self.train_fscore_list = []
-		self.train_accuracy_list = []
+		# Initialize performance lists
+		self = linkage_tools.Linker.init_lists(self)
 
-		self.val_precision_list = []
-		self.val_recall_list = []
-		self.val_fscore_list = []
-		self.val_accuracy_list = []
 
 	# Train the perceptron
 	def train(self, inputs_list, truth, guesses):

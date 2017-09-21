@@ -17,9 +17,20 @@ class Linker(Munkres):
 							user='root',
 							db='mdc_2017_09_07', 
 							charset='utf8mb4',
-							cursorclass=pymysql.cursors.DictCursor) 
-
+							cursorclass=pymysql.cursors.DictCursor)
 #db= 'current', db='mdc_2017_08_11', db='mdc_2017_09_05', 
+      
+	def init_lists(self):
+		self.train_precision_list = []
+		self.train_recall_list = []
+		self.train_fscore_list = []
+		self.train_accuracy_list = []
+
+		self.val_precision_list = []
+		self.val_recall_list = []
+		self.val_fscore_list = []
+		self.val_accuracy_list = []
+		return(self)
 
 	def exec_sql(self, sql):
 		''' Executes a sql command (string arg) and returns result as pandas dataframe '''

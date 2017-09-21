@@ -1,7 +1,6 @@
 # python KerasModel class
 
 import numpy as np
-#import scipy.special # for the sigmoid function expit()
 from keras import models
 from keras import layers
 from keras import optimizers
@@ -27,53 +26,20 @@ class KerasModel(linkage_tools.Linker):
         self.model.add(layers.Dense(hiddennodes, activation='relu'))
         self.model.add(layers.Dense(outputnodes, activation='sigmoid'))
         self.model.compile(optimizer=optimizers.RMSprop(lr=self.lr),
-                        loss='binary_crossentropy',
-                        metrics=['accuracy'])
-        
-        self.train_precision_list = []
-        self.train_recall_list = []
-        self.train_fscore_list = []
-        self.train_accuracy_list = []
+                            loss='binary_crossentropy',
+                            metrics=['accuracy'])
 
-        self.val_precision_list = []
-        self.val_recall_list = []
-        self.val_fscore_list = []
-        self.val_accuracy_list = []
+        # Initialize performance lists
+        self = linkage_tools.Linker.init_lists(self)
 
     # train the neural network
     def train(self, inputs_list, truth_list, guess_list):
-        
+                
+        inputs = np.array(inputs_list, ndmin=2, dtype=np.float)
+        truth = np.squeeze(truth_list)
+        self.model.train_on_batch(inputs, truth)
         # self.model.fit(x_train, y_train, epochs=4, batch_size=512)
         
-        record_list = inputs_list*.98+.01 # scale inputs to between .01 and .99
-        truth_list = truth_list*.98+.01
-        for record,truth in zip(record_list.values.tolist(),truth_list):
-
-            # convert inputs list to 2d array
-            inputs = np.array(record, ndmin=2, dtype=np.float).T
-            truth = np.array(truth, ndmin=2, dtype=np.float)
-
-            # calculate signals into hidden layer
-            hidden_inputs = np.dot(self.wih, inputs)
-            # calculate the signals emerging from hidden layer
-            hidden_outputs = self.activation_function(hidden_inputs)
-
-            # calculate signals into final output layer
-            final_inputs = np.dot(self.who, hidden_outputs)
-            # calculate the signals emerging from final output layer
-            final_outputs = self.activation_function(final_inputs)
-
-            # output layer error is the (truth - guesses)
-            output_errors = truth - final_outputs
-            # hidden layer error is the output_errors, split by weights, recombined at hidden nodes
-            hidden_errors = np.dot(self.who.T, output_errors) 
-
-            # update the weights for the links between the hidden and output layers
-            self.who += self.lr * np.dot((output_errors * final_outputs * (1.0 - final_outputs)), np.transpose(hidden_outputs))
-
-            # update the weights for the links between the input and hidden layers
-            self.wih += self.lr * np.dot((hidden_errors * hidden_outputs * (1.0 - hidden_outputs)), np.transpose(inputs))
-
     # query the neural network
     def query(self, inputs_list, input_ids):
         # convert inputs list to 2d array

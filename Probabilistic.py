@@ -21,16 +21,9 @@ class Probabilistic(linkage_tools.Linker):
 		# Activation function is the logarithmic function
 		self.activation_function = lambda x: np.sum(np.log(x))
 
-		self.train_precision_list = []
-		self.train_recall_list = []
-		self.train_fscore_list = []
-		self.train_accuracy_list = []
+		# Initialize performance lists
+		self = linkage_tools.Linker.init_lists(self)
 
-		self.val_precision_list = []
-		self.val_recall_list = []
-		self.val_fscore_list = []
-		self.val_accuracy_list = []
-		
 	# Train the probabilistic linker
 	def train(self, inputs_list, truth, guesses):
 		'''e.g. pr.train(bool_table[feature_vals],bool_table['pair_match'])'''
