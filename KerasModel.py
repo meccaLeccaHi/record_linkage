@@ -8,19 +8,38 @@ import linkage_tools # for the Linker superclass
 
 # Wrapper for keras model class definition
 class KerasModel(linkage_tools.Linker):
+    """
+    Wrapper for neural network built using keras platform.
+    Parameters
+    ------------
+    inputnodes : int
+        Size of input layer (i.e. number of 'neurons')
+    hiddennodes : int
+        Size of n hidden layers
+    outputnodes : int
+        Size of output layer
+    learningrate : float
+        Learning rate (between 0.0 and 1.0)
 
-    # initialise the neural network
+    Attributes
+    ------------
+    model : object
+        Sequential keras neural network model.
+
+    activation_function : function
+        Function to apply to inputs.
+    """
+    
+    # Initialize the neural network
     def __init__(self, features, hiddennodes, outputnodes, **keywords):
         
-        # Set a classifier descriptors
-        #self.classifier_type = 'keras model wrapper'
         self.features = features
         if ('learningrate' in keywords):
             self.lr = keywords['learningrate'] # Learning rate
         else:
             self.lr = 0.1
 
-        # set number of nodes in each input, hidden, output layer
+        # Set number of nodes in each input, hidden, output layer
         self.model = models.Sequential()
         self.model.add(layers.Dense(hiddennodes, activation='relu', input_shape=(len(features),)))
         self.model.add(layers.Dense(hiddennodes, activation='relu'))
@@ -38,11 +57,10 @@ class KerasModel(linkage_tools.Linker):
         inputs = np.array(inputs_list, ndmin=2, dtype=np.float)
         truth = np.squeeze(truth_list)
         self.model.train_on_batch(inputs, truth)
-        # self.model.fit(x_train, y_train, epochs=4, batch_size=512)
         
-    # query the neural network
+    # Query the neural network
     def query(self, inputs_list, input_ids):
-        # convert inputs list to 2d array
+        # Convert inputs list to 2d array
         inputs = np.array(inputs_list, ndmin=2, dtype=np.float)
 
         results = self.model.predict(inputs)        
