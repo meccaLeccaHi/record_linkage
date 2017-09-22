@@ -109,13 +109,13 @@ class Linker(Munkres):
 		Precision: proportion of how many of the classified matches (TP + FP) have been correctly
 		classified as true matches (TP) a.k.a. positive-predictive value
 		'''
-		precision = TP/float(TP + FP)
+		precision = (TP/float(TP + FP))*100 
 
 		'''
 		Recall: measures the proportion of true matches (TP + FN) that have been classified correctly 		(TP). It thus measures how many of the actual true matching record pairs have been correctly
 		classified as matches. a.k.a. true-positive rate or sensitivity
 		'''
-		recall = TP/float(TP + FN)
+		recall = (TP/float(TP + FN))*100 
 
 		'''
 		F-measure: calculates the harmonic mean between precision and recall. The f-measure combines
