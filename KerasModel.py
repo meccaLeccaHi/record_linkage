@@ -4,6 +4,7 @@ import numpy as np
 from keras import models
 from keras import layers
 from keras import optimizers
+from keras import regularizers
 import linkage_tools # for the Linker superclass
 
 # Wrapper for keras model class definition
@@ -41,8 +42,13 @@ class KerasModel(linkage_tools.Linker):
 
         # Set number of nodes in each input, hidden, output layer
         self.model = models.Sequential()
-        self.model.add(layers.Dense(hiddennodes, activation='relu', input_shape=(len(features),)))
-        self.model.add(layers.Dense(hiddennodes, activation='relu'))
+        #self.model.add(layers.Dense(hiddennodes, activation='relu', input_shape=(len(features),)))
+        #self.model.add(layers.Dense(hiddennodes, activation='relu'))
+        self.model.add(layers.Dense(hiddennodes, kernel_regularizer=regularizers.l2(0.001),activation='relu', input_shape=(len(features),)))
+        #self.model.add(layers.Dropout(0.5))
+        self.model.add(layers.Dense(hiddennodes, kernel_regularizer=regularizers.l2(0.001),
+                                    activation='relu'))
+        #self.model.add(layers.Dropout(0.5))
         self.model.add(layers.Dense(outputnodes, activation='sigmoid'))
         self.model.compile(optimizer=optimizers.RMSprop(lr=self.lr),
                             loss='binary_crossentropy',

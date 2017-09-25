@@ -109,14 +109,14 @@ class Linker(Munkres):
         Precision: proportion of how many of the classified matches (TP + FP) have been correctly
         classified as true matches (TP) a.k.a. positive-predictive value
         '''
-        precision = (TP/float(TP + FP))*100
+        precision = (TP/float(TP + FP))*100.000
 
         '''
         Recall: measures the proportion of true matches (TP + FN) that have been classified correctly (TP). It thus measures 
         how many of the actual true matching record pairs have been correctly classified as matches. a.k.a. true-positive rate 
         or sensitivity
         '''
-        recall = (TP/float(TP + FN))*100
+        recall = (TP/float(TP + FN))*100.000
 
         '''
         F-measure: calculates the harmonic mean between precision and recall. The f-measure combines
@@ -126,7 +126,7 @@ class Linker(Munkres):
         fscore = 2*((precision*recall)/float(precision+recall))
 
         # Standard ML accuracy measure
-        accuracy = ((TP + TN)/float(TP + FP + TN + FN))*100
+        accuracy = ((TP + TN)/float(TP + FP + TN + FN))*100.000
         
         self.train_precision_list.append(precision)
         self.train_recall_list.append(recall)
@@ -146,16 +146,16 @@ class Linker(Munkres):
         FN = len(set(no_match_guess)-set(no_match_answer)) # FP 
 
         # Precision
-        precision = (TP/float(TP + FP))*100
+        precision = (TP/float(TP + FP))*100.000
 
         # Recall
-        recall = (TP/float(TP + FN))*100
+        recall = (TP/float(TP + FN))*100.000
 
         # F-measure
         fscore = 2*((precision*recall)/float(precision+recall))
 
         # Standard ML accuracy measure
-        accuracy = ((TP + TN)/float(TP + FP + TN + FN))*100
+        accuracy = ((TP + TN)/float(TP + FP + TN + FN))*100.000
 
         self.val_precision_list.append(precision)
         self.val_recall_list.append(recall)	
